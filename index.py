@@ -11,8 +11,7 @@ import logging
 # from log import init_logging
 client = MongoClient('127.0.0.1', 27017)
 db = client.spider
-collection = db.shenhua
-print(collection.count())
+collection = db.shenhua2
 
 
 def get_content(url, data = None):
@@ -80,31 +79,26 @@ def get_content_detail(url, data = None):
 def get_data(html_text):
     final = []
     bs = BeautifulSoup(html_text, "html.parser")  # 创建BeautifulSoup对象
-    data = bs.find_all(class_='r-block')
+    data = bs.find_all(class_='right-item')
 
     for day in data:
         bid_sh = {}
         pass
         bid_sh['link'] = day.find('a').get('href')
-        # bid_sh['name'] = day.find('a').get('title')
-        bid_sh['time'] = day.find('span').string
-        # print(bid_sh)
+        bid_sh['time'] = day.find(class_='r').string
+        print(bid_sh['link'])
         bid_html = get_content_detail('http://www.shenhuabidding.com.cn'+bid_sh['link'])
         soup = BeautifulSoup(bid_html, "html.parser")
-        tr = soup.find_all('tr')
-        td = tr[1].find_all('td')
-        bid_sh['bid_num'] = td[0].string
-        bid_sh['name'] = td[1].string
-        bid_sh['company_name'] = td[2].string
-        print(bid_sh['bid_num'])
+        tr = soup.find(class_='container')
+        bid_sh["bid_company_list"] = str(tr)
         collection.insert(bid_sh)
     return final
 
 
 if __name__ == '__main__':
     # init_logging()
-    for i in range(1, 13):
-        url = 'http://www.shenhuabidding.com.cn/bidweb/001/001006/'+str(i)+'.html'
+    for i in range(1, 13333):
+        url = 'http://www.shenhuabidding.com.cn/bidweb/001/001005/'+str(i)+'.html'
         html = get_content(url)
         result = get_data(html)
 
