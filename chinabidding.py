@@ -9,7 +9,10 @@ from pymongo import MongoClient
 from bs4 import BeautifulSoup
 import logging
 # from log import init_logging
-client = MongoClient('127.0.0.1', 27017)
+uri = 'mongodb://baiyang:baiyang@localhost:27017/'
+client = MongoClient(uri)
+# client = MongoClient('127.0.0.1', 27017)
+
 db = client.spider
 collection = db.chinabidding
 
