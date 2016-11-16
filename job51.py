@@ -55,8 +55,9 @@ def get_data(html_text):
         print('none')
     else:
         bid_sh = {}
-        li = content.find(class_='tHeader_mk')
-        bid_sh['company'] = str(li)
+        pass
+        # con = content.find(class_='tHeader_mk')
+        bid_sh['company'] = str(content)
         bid_sh['link'] = url
         collection.insert(bid_sh)
         print(bid_sh['link'])
