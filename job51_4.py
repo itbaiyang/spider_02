@@ -9,9 +9,9 @@ from pymongo import MongoClient
 from bs4 import BeautifulSoup
 
 client = MongoClient('127.0.0.1', 27017)
-client.spider.authenticate('baiyang', 'baiyang')
+# client.spider.authenticate('baiyang', 'baiyang')
 db = client.spider
-collection = db.job51
+collection = db.job51_4
 
 
 def get_content(url, data = None):
@@ -60,12 +60,12 @@ def get_data(html_text):
         summary = content.find(class_='con_msg')
         position = content.find(class_='table_list')
         bid_sh['name'] = name
-        # print(bid_sh['name'])
+        print(url)
         bid_sh['link'] = url
         # bid_sh['detail'] = str(detail)
         # bid_sh['summary'] = str(summary)
         if str(position) == 'None':
-            print('no position')
+            print('no position', url)
         else:
             list_ul = position.find(id='joblistdata')
             list_item = list_ul.find_all(class_='el')
@@ -85,7 +85,7 @@ def get_data(html_text):
 
 
 if __name__ == '__main__':
-    for i in range(1, 1000000):
+    for i in range(4000001, 5000000):
         url = 'http://jobs.51job.com/all/co'+str(i)+'.html'
         html = get_content(url)
         result = get_data(html)

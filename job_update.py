@@ -1,4 +1,8 @@
-
+import requests
+import random
+import time
+import socket
+import http.client
 from pymongo import MongoClient
 from bs4 import BeautifulSoup
 
@@ -13,7 +17,7 @@ def get_data(html_text):
     bs = BeautifulSoup(html_text, "html.parser")  # 创建BeautifulSoup对象
     bid_sh = {}
     pass
-    name = bs.find('h1').string
+    name = bs.find('h1').get('title')
     detail = bs.find(class_='ltype')
     summary = bs.find(class_='con_msg')
     position = bs.find(class_='table_list')
@@ -33,7 +37,7 @@ def get_data(html_text):
             pass
             position_detail['position_name'] = item.find('a').string
             position_detail['position_need'] = item.find(class_='t2').string
-            position_detail['position_addr'] = item.find(class_='t3').string
+            position_detail['position_address'] = item.find(class_='t3').string
             position_detail['position_money'] = item.find(class_='t4').string
             position_detail['position_time'] = item.find(class_='t5').string
             position_arr.append(position_detail)
@@ -45,6 +49,6 @@ def get_data(html_text):
     print(bid_sh['name'])
     return final
 if __name__ == '__main__':
-    for i in collection:
+    for i in collection.find():
         link = i['link']
         result = get_data(i['company'])
