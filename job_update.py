@@ -22,7 +22,8 @@ def get_data(html_text):
     bid_sh['detail'] = str(detail)
     bid_sh['summary'] = str(summary)
     if str(position) == 'None':
-        print('none')
+        collection.update({"link": link}, {"$set": {"name": name, "detail": str(detail), "summary": str(summary),
+                                                    "company": ''}})
     else:
         list_ul = position.find(id='joblistdata')
         list_item = list_ul.find_all(class_='el')
@@ -38,8 +39,8 @@ def get_data(html_text):
             position_arr.append(position_detail)
         bid_sh['position'] = str(position_arr)
     # collection.insert(bid_sh)
-    collection.update({"link": link}, {"$set": {"name": name, "detail": str(detail), "summary": str(summary),
-                                                "position": str(position_arr), "company": ''}})
+        collection.update({"link": link}, {"$set": {"name": name, "detail": str(detail), "summary": str(summary),
+                                                    "position": str(position_arr), "company": ''}})
     # collection.update()
     print(bid_sh['name'])
     return final
