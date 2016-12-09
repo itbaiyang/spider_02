@@ -4,6 +4,7 @@ import requests
 import random
 import time
 import socket
+import re
 import http.client
 from pymongo import MongoClient
 from bs4 import BeautifulSoup
@@ -12,8 +13,8 @@ from bs4 import BeautifulSoup
 # sys.setdefaultencoding('utf8')
 client = MongoClient('127.0.0.1', 27017)
 db = client.spider_02
-collection = db.yingcai
-collection_company = db.company_china_yc
+collection = db.yingcai_job
+# collection_company = db.company_china_yc
 
 
 def get_content(url_list, data = None):
@@ -51,40 +52,71 @@ def get_data(html_text):
     final = {}
     bs = BeautifulSoup(html_text, "html.parser")  # 创建BeautifulSoup对象
     data = bs.find(class_='base-company')
-    if data == 'None':
-        print('none data')
+    treat_company = bs.find(class_='treat-company')
+    job_data = bs.find(id="s_exampleJob")
+    if data == None:
+        print('no data')
+    elif job_data == None:
+        print('no job')
     else:
-        try:
-            company_name = data.find(class_='wrap-til').find('h1').string
-            final['company_name'] = company_name
-            company_tag = data.find(class_='wrap-mc').find_all('em')
-            if company_tag == 'None':
-                print('none tag')
+        if treat_company == None:
+            print("no tags")
+        else:
+            company_tag_list = treat_company.find_all("li")
+            tag_arr_zong = []
+            for tag_list in company_tag_list:
+                tag_item = tag_list.get_text()
+                tag_arr_zong.append(tag_item)
+            final['tag'] = tag_arr_zong
+        company_name = data.find(class_='wrap-til').find('h1').string
+        final['company_name'] = company_name
+        company_item = job_data.find_all(class_="exj-child")
+        job_arr = []
+        for item in company_item:
+            job = {}
+            pass
+            job['link'] = item.find("a").get('href')
+            job['title'] = item.find("a").get_text()
+            job['salary'] = item.find(class_="exj-e2").get_text()
+            job_position = item.find(class_="exj-e3").get_text().strip()
+            print(job_position)
+            try:
+                job['position'] = re.match(r'\[(.*?)\]', job_position).groups()[0]
+            except:
+                print("no position")
+            job['time'] = item.find(class_="exj-e4").get_text()
+            html_detail = get_content(job['link'])
+            bs_detail = BeautifulSoup(html_detail, "html.parser")
+            data_detail = bs_detail.find(class_='job_profile')
+            job['job_intro_info'] = str(bs_detail.find(class_='job_intro_info'))
+            job['job_intro_tag'] = str(bs_detail.find(class_='job_intro_tag'))
+            data_temp = data_detail.find(class_='job_exp')
+            if data_temp == None:
+                print('no need')
             else:
-                position_arr = []
-                for item_add in company_tag:
-                    item_em = item_add.string
-                    position_arr.append(str(item_em))
-                final['company_tag'] = str(position_arr)
-            company_detail = data.find(class_='address-company').find_all('p')
-            if company_detail == 'None':
-                print('none detail')
+                job['date'] = data_temp.get_text()
+            company_tag = data_detail.find(class_='job_fit_tags')
+
+            if company_tag == None:
+                print('no tag')
             else:
-                detail = []
-                for item in company_detail:
-                    p_detail = item.get_text()
-                    detail.append(p_detail)
-            final['detail'] = str(detail)
-            collection.insert(final)
-        except:
-            print('none')
+                company_tag_li = company_tag.find_all("li")
+                tag_arr = []
+                for tag_list in company_tag_li:
+                    tag_item = tag_list.get_text()
+                    tag_arr.append(tag_item)
+                job['tag'] = tag_arr
+                job_arr.append(job)
+        final['job'] = job_arr
+        collection.insert(final)
     return final
 
 
 if __name__ == '__main__':
-    for i in range(400001, 500000):
+    for i in range(400589, 500000):
         print(str(i))
         url = 'http://www.chinahr.com/company/20-'+str(i)+'.html'
+    # url = 'http://www.chinahr.com/company/20-662922.html'
         html = get_content(url)
         result = get_data(html)
 

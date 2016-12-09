@@ -4,6 +4,7 @@ import requests
 import random
 import time
 import socket
+import re
 import http.client
 from pymongo import MongoClient
 from bs4 import BeautifulSoup
@@ -13,7 +14,7 @@ from bs4 import BeautifulSoup
 client = MongoClient('127.0.0.1', 27017)
 db = client.spider_02
 collection = db.yingcai_222
-collection_company = db.company_china_yc
+# collection_company = db.company_china_yc
 
 
 def get_content(url_list, data = None):
@@ -72,7 +73,14 @@ def get_data(html_text):
             else:
                 detail = []
                 for item in company_detail:
-                    p_detail = item.get_text()
+                    p_detail = item.get_text(strip=True)
+                    if "：" in p_detail:
+                        detail_arr = p_detail.split('：')
+                        try:
+                            key = re.sub(u"[^\u4e00-\u9fa5]", '', detail_arr[0])
+                            final[key] = detail_arr[1]
+                        except:
+                            final['warn'] = p_detail
                     detail.append(p_detail)
             final['detail'] = str(detail)
             collection.insert(final)
@@ -82,9 +90,10 @@ def get_data(html_text):
 
 
 if __name__ == '__main__':
-    for i in range(500001, 600000):
+    for i in range(1090648, 1100000):
         print(str(i))
         url = 'http://www.chinahr.com/company/20-'+str(i)+'.html'
+        # url = 'http://www.chinahr.com/company/20-21.html'
         html = get_content(url)
         result = get_data(html)
 

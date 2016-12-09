@@ -113,7 +113,7 @@ def get_data(html_text):
 
 
 if __name__ == '__main__':
-    for i in range(103382, 200000):
+    for i in range(367231, 400000):
         print(str(i))
         url = 'http://www.chinahr.com/company/20-'+str(i)+'.html'
     # url = 'http://www.chinahr.com/company/20-662922.html'

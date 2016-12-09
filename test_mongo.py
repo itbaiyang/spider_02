@@ -7,10 +7,10 @@ from pymongo import MongoClient
 
 client = MongoClient('127.0.0.1', 27017)
 db = client.spider_02
-collection = db.yingcai
+collection = db.yingcai_jia
 
 i = 0
-for egg in collection.find():
+for egg in collection.find().skip(433958):
     # 26075
     i += 1
     print(i)
