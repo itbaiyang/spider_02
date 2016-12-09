@@ -5,8 +5,8 @@ from pymongo import MongoClient
 client = MongoClient()
 db = client.spider_02
 collection = db.job
-position = collection.find({"company_tag": {"$exists": True}}).skip(69350)
-i = 69350
+position = collection.find({"company_tag": {"$exists": True}}).skip(80754)
+i = 80754
 for item in position:
     print(item["company_name"])
     update = eval(item["company_tag"])

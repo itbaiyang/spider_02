@@ -5,8 +5,8 @@ from pymongo import MongoClient
 client = MongoClient()
 db = client.spider_02
 collection = db.job_51_u
-position = collection.find().skip(88023)
-i = 88023
+position = collection.find().skip(95649)
+i = 95649
 for item in position:
     print(item["link"])
     update = eval(item["position"])
