@@ -4,12 +4,14 @@ from pymongo import MongoClient
 
 client = MongoClient()
 db = client.spider_02
-collection = db.job
-position = collection.find({"company_tag": {"$exists": True}}).skip(80754)
-i = 80754
+collection = db.job_update
+position = collection.find({"company_tag": {"$exists": True}}).skip(181183)
+i = 181183
 for item in position:
-    print(item["company_name"])
-    update = eval(item["company_tag"])
-    collection.update({"company_name": item["company_name"]}, {"$set": {"company_tag": update}})
+    try:
+        update = eval(item["company_tag"])
+        collection.update({"company_name": item["company_name"]}, {"$set": {"company_tag": update}})
+    except:
+        print("done")
     print(i)
     i += 1
